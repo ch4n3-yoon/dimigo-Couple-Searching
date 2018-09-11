@@ -46,7 +46,6 @@ def searchCouple(stay_id):
             if dimi1['gender'] == dimi2['gender']:
                 continue
 
-
             if seat1[0] == seat2[0]:
                 num1 = int(seat1[1:])
                 num2 = int(seat2[1:])
@@ -62,15 +61,14 @@ def searchCouple(stay_id):
 
 def main():
     stays = getStayLists()
-    stayDimigoins = []
     for s in stays:
         stay_id = s['dates'][0]['stay_id']
 
-        print '[*] stay_id : {0}'.format(stay_id)
+        print '[*] stay_id : {0}'.format(stay_id),
+        print '({0})'.format(s['dates'][0]['stay_date'])
 
-        print getStayingDimigoin(stay_id)
         searchCouple(stay_id)
-    return stayDimigoins
+
 
 if __name__ == '__main__':
     main()
