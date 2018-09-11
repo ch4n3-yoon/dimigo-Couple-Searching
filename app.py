@@ -106,6 +106,7 @@ def isCouple(stay_id, user_id1, user_id2):
     else:
         stayingDimigoins[stay_id] = getStayingDimigoin(stay_id)
         dimigoins = stayingDimigoins[stay_id]
+
     for dimi1 in dimigoins:
         if dimi1['user_id'] != user_id1:
             continue
@@ -147,9 +148,12 @@ def checkCouple(searchedStayId, user_id1, user_id2):
     # print "[*] Searching ...",
     # print stay_ids
 
+    cnt = 1
     for stay_id in stay_ids:
         result = isCouple(stay_id, user_id1, user_id2)
         if result:
+            cnt += 1
+        if cnt == 3:
             return True
     return False
 
