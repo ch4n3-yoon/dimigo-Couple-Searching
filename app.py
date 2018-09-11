@@ -26,10 +26,10 @@ def getStay(stay_id):
 
 def getStayingDimigoin(stay_id):
     stay_info = getStay(stay_id)
-    # print '[*] stay_id : {0}'.format(stay_id)
+
     stayDimigoins = []
     for i in range(len(stay_info)):
-        user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'], 'seat': stay_info[i]['seat']}
+        user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'], 'seat': stay_info[i]['seat'], 'gender': stay_info[i]['gender']}
         stayDimigoins.append(user)
     return stayDimigoins
 
@@ -43,12 +43,16 @@ def searchCouple(stay_id):
             seat2 = dimi2['seat']
             if seat2 == None:
                 continue
+            if dimi1['gender'] == dimi2['gender']:
+                continue
+
 
             if seat1[0] == seat2[0]:
                 num1 = int(seat1[1:])
                 num2 = int(seat2[1:])
                 if (num1 - 1) == num2 or (num1 + 1) == num2:
                     print "[*] 커플 발견"
+
                     print dimi1['name'],
                     print "♥",
                     print dimi2['name']
@@ -61,12 +65,8 @@ def main():
     stayDimigoins = []
     for s in stays:
         stay_id = s['dates'][0]['stay_id']
-        stay_info = getStay(stay_id)
 
         print '[*] stay_id : {0}'.format(stay_id)
-        # for i in range(len(stay_info)):
-        #     user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'], 'seat': stay_info[i]['seat']}
-        #     stayDimigoins.append(user)
 
         print getStayingDimigoin(stay_id)
         searchCouple(stay_id)
