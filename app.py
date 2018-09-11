@@ -5,13 +5,74 @@ __author__ = 'ch4n3'
 
 import requests
 import json
+import authkey
 
 headers = {
-    'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxMzY4LCJ1c2VybmFtZSI6ImNoYW5leW9vbiIsImVtYWlsIjoiY2hhbmV5b29uQGdtYWlsLmNvbSIsIm5hbWUiOiLsnKTshJ3ssKwiLCJuaWNrIjoiPCEtLSIsImdlbmRlciI6Ik0iLCJ1c2VyX3R5cGUiOiJTIiwiYmlydGhkYXRlIjoiMjAwMS0wMi0yMCIsInBob25lIjpudWxsLCJzdGF0dXMiOjEwLCJwaG90b2ZpbGUxIjoicGhvdG8xXzAwMTM2OF9jaGFuZXlvb25fM0FLbDJGLmpwZyIsInBob3RvZmlsZTIiOm51bGwsImNyZWF0ZWRfYXQiOiIyMDE3LTAzLTAyIDE1OjQzOjA0IiwidXBkYXRlZF9hdCI6IjIwMTctMDctMTIgMTU6MzE6NDgiLCJwYXNzd29yZF9oYXNoIjpudWxsLCJzc29fdG9rZW4iOiJMN21QRklOSlZjNjF3cHQlMkZkWDBGdmdMQTZkMDViNWtBTG12eHR5cVk0MUhReE1ubzl4WDhzNDVKZWFSU0NlY00ifSwic3R1ZGVudCI6eyJpZCI6NDA5LCJ1c2VyX2lkIjoxMzY4LCJ1c2VybmFtZSI6ImNoYW5leW9vbiIsIm5hbWUiOiLsnKTshJ3ssKwiLCJnZW5kZXIiOiJNIiwicGhvbmUiOm51bGwsImdyYWRlIjoyLCJjbGFzcyI6NiwibnVtYmVyIjoyMywic2VyaWFsIjoiMjYyMyIsInJmY2FyZF91aWQiOiI2MEM2NzNBMDUwMDEwNEUwIiwicGhvdG9maWxlMSI6InBob3RvMV8wMDEzNjhfY2hhbmV5b29uXzNBS2wyRi5qcGciLCJwaG90b2ZpbGUyIjpudWxsLCJkb3JtaXRvcnkiOiLtlZnrtInqtIAiLCJyb29tX251bSI6IjMyMCIsImJpcnRoZGF0ZSI6IjIwMDEtMDItMjAiLCJlbWFpbCI6ImNoYW5leW9vbkBnbWFpbC5jb20iLCJjcmVhdGVkQXQiOm51bGwsInVwZGF0ZWRBdCI6bnVsbH0sIm1hbmdlciI6ZmFsc2UsInZlciI6MiwiaWF0IjoxNTM2MzI3ODg1LCJleHAiOjE1Mzg5MTk4ODV9.qAZTu5V6IIonN9WcNLZ0w1usOjD0eMjC-t4Se2jvmqI'
+    'Authorization': authkey.authkey
 }
 def getStayLists():
     r = requests.get('http://api.dimigo.life/service/stay', headers=headers)
     dump = json.loads(r.text)
-    return dump
+    if dump['code'] != 200:
+        return False
+    return dump['data']
 
-print getStayLists()
+def getStay(stay_id):
+    r = requests.get('http://api.dimigo.life/service/stay/apply/{0}'.format(stay_id), headers=headers)
+    dump = json.loads(r.text)
+    if dump['code'] != 200:
+        return False
+    return dump['data']
+
+def getStayingDimigoin(stay_id):
+    stay_info = getStay(stay_id)
+    # print '[*] stay_id : {0}'.format(stay_id)
+    stayDimigoins = []
+    for i in range(len(stay_info)):
+        user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'], 'seat': stay_info[i]['seat']}
+        stayDimigoins.append(user)
+    return stayDimigoins
+
+def searchCouple(stay_id):
+    dimigoins = getStayingDimigoin(stay_id)
+    for dimi1 in dimigoins:
+        seat1 = dimi1['seat']
+        if seat1 == None:
+            continue
+        for dimi2 in dimigoins:
+            seat2 = dimi2['seat']
+            if seat2 == None:
+                continue
+
+            if seat1[0] == seat2[0]:
+                num1 = int(seat1[1:])
+                num2 = int(seat2[1:])
+                if (num1 - 1) == num2 or (num1 + 1) == num2:
+                    print "[*] 커플 발견"
+                    print dimi1['name'],
+                    print "♥",
+                    print dimi2['name']
+
+
+
+
+def main():
+    stays = getStayLists()
+    stayDimigoins = []
+    for s in stays:
+        stay_id = s['dates'][0]['stay_id']
+        stay_info = getStay(stay_id)
+
+        print '[*] stay_id : {0}'.format(stay_id)
+        # for i in range(len(stay_info)):
+        #     user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'], 'seat': stay_info[i]['seat']}
+        #     stayDimigoins.append(user)
+
+        print getStayingDimigoin(stay_id)
+        searchCouple(stay_id)
+    return stayDimigoins
+
+if __name__ == '__main__':
+    main()
+
+
