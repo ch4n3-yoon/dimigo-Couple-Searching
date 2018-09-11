@@ -47,7 +47,8 @@ def getStayingDimigoin(stay_id):
 
     stayDimigoins = []
     for i in range(len(stay_info)):
-        user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'], 'seat': stay_info[i]['seat'], 'gender': stay_info[i]['gender']}
+        user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'],
+                'seat': stay_info[i]['seat'], 'gender': stay_info[i]['gender']}
         stayDimigoins.append(user)
     return stayDimigoins
 
