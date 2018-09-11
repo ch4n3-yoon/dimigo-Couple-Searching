@@ -8,6 +8,7 @@ import json
 import authkey
 
 stayingDimigoins = {}
+couples = []
 
 headers = {
     'Authorization': authkey.authkey
@@ -90,10 +91,13 @@ def searchCouple(stay_id):
                     # except RuntimeError:
                     #     pass
                     if checkCouple(stay_id, dimi1['user_id'], dimi2['user_id']):
-                        print "[*] 커플 발견"
-                        print dimi1['name'],
-                        print "♥",
-                        print dimi2['name']
+                        if not isAlreadySearched(dimi1, dimi2):
+                            # print "[*] 커플 발견"
+                            # print dimi1['name'],
+                            # print "♥",
+                            # print dimi2['name']
+
+                            couples.append({dimi1['gender']: dimi1['name'], dimi2['gender']: dimi2['name']})
                     # done = True
 
 def isCouple(stay_id, user_id1, user_id2):
@@ -149,6 +153,17 @@ def checkCouple(searchedStayId, user_id1, user_id2):
             return True
     return False
 
+def isAlreadySearched(user1, user2):
+    for c in couples:
+        if c[user1['gender']] == user1['name'] and c[user2['gender']] == user2['name']:
+            return True
+    return False
+
+def printCouples():
+    for c in couples:
+        print c['M'],
+        print '♥',
+        print c['F']
 
 def main():
     stays = getStayLists()
@@ -159,7 +174,7 @@ def main():
         print '({0})'.format(s['dates'][0]['stay_date'])
 
         searchCouple(stay_id)
-
+    printCouples()
 
 if __name__ == '__main__':
     main()
