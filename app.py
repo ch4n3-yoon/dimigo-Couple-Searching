@@ -7,6 +7,8 @@ import requests
 import json
 import authkey
 
+stayingDimigoins = {}
+
 headers = {
     'Authorization': authkey.authkey
 }
@@ -17,15 +19,31 @@ def getStayLists():
         return False
     return dump['data']
 
+def getAllStayIds():
+    stay_ids = []
+    stays = getStayLists()
+    for s in stays:
+        stay_ids.append(s['dates'][0]['stay_id'])
+    return stay_ids
+
+allStayIds = getAllStayIds()
+
 def getStay(stay_id):
     r = requests.get('http://api.dimigo.life/service/stay/apply/{0}'.format(stay_id), headers=headers)
-    dump = json.loads(r.text)
+
+    try:
+        dump = json.loads(r.text)
+    except ValueError:
+        print "[*] json parsing failed"
+        return False
     if dump['code'] != 200:
         return False
     return dump['data']
 
 def getStayingDimigoin(stay_id):
     stay_info = getStay(stay_id)
+    if stay_info == False:
+        return False
 
     stayDimigoins = []
     for i in range(len(stay_info)):
@@ -33,8 +51,18 @@ def getStayingDimigoin(stay_id):
         stayDimigoins.append(user)
     return stayDimigoins
 
+
 def searchCouple(stay_id):
-    dimigoins = getStayingDimigoin(stay_id)
+    if stayingDimigoins.has_key(stay_id):
+        dimigoins = stayingDimigoins[stay_id]
+    else:
+        stayingDimigoins[stay_id] = getStayingDimigoin(stay_id)
+        dimigoins = stayingDimigoins[stay_id]
+
+    if dimigoins == False:
+        return False
+
+    # print dimigoins
     for dimi1 in dimigoins:
         seat1 = dimi1['seat']
         if seat1 == None:
@@ -45,18 +73,80 @@ def searchCouple(stay_id):
                 continue
             if dimi1['gender'] == dimi2['gender']:
                 continue
+            if len(seat1) == 0 or len(seat2) == 0:
+                continue
 
             if seat1[0] == seat2[0]:
-                num1 = int(seat1[1:])
-                num2 = int(seat2[1:])
-                if (num1 - 1) == num2 or (num1 + 1) == num2:
-                    print "[*] 커플 발견"
+                try:
+                    num1 = int(seat1[1:])
+                    num2 = int(seat2[1:])
+                except TypeError:
+                    continue
+                if abs(num1 - num2) == 1:
 
-                    print dimi1['name'],
-                    print "♥",
-                    print dimi2['name']
+                    # try:
+                    #    lib.t.start()
+                    # except RuntimeError:
+                    #     pass
+                    if checkCouple(stay_id, dimi1['user_id'], dimi2['user_id']):
+                        print "[*] 커플 발견"
+                        print dimi1['name'],
+                        print "♥",
+                        print dimi2['name']
+                    # done = True
 
+def isCouple(stay_id, user_id1, user_id2):
+    if stayingDimigoins.has_key(stay_id):
+        dimigoins = stayingDimigoins[stay_id]
+    else:
+        stayingDimigoins[stay_id] = getStayingDimigoin(stay_id)
+        dimigoins = stayingDimigoins[stay_id]
+    for dimi1 in dimigoins:
+        if dimi1['user_id'] != user_id1:
+            continue
+        for dimi2 in dimigoins:
+            if dimi2['user_id'] != user_id2:
+                continue
 
+            # 잔류 좌석 미선택자를 위한 예외 처리
+            if dimi1['seat'] == None or dimi2['seat'] == None:
+                continue
+
+            try:
+                if dimi1['seat'][0] == dimi2['seat'][0]:
+                    seat1 = int(dimi1['seat'][1:])
+                    seat2 = int(dimi2['seat'][1:])
+
+                    if abs(seat2 - seat1) == 1:
+                        return True
+            except IndexError:
+                return False
+    return False
+
+def checkCouple(searchedStayId, user_id1, user_id2):
+    stay_ids = allStayIds
+    index = stay_ids.index(searchedStayId)
+
+    search_ids = []
+    if (index - 2) < 0:
+        for i in range(0, index + 3):
+            search_ids.append(stay_ids[i])
+    else:
+        for i in range(index - 2, index + 3):
+            try:
+                search_ids.append(stay_ids[i])
+            except IndexError:
+                pass
+    search_ids.remove(searchedStayId)
+    stay_ids = search_ids
+    # print "[*] Searching ...",
+    # print stay_ids
+
+    for stay_id in stay_ids:
+        result = isCouple(stay_id, user_id1, user_id2)
+        if result:
+            return True
+    return False
 
 
 def main():
