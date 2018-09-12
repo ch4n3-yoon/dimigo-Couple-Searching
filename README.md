@@ -44,3 +44,8 @@ git clone https://github.com/ch4n3-yoon/dimigo-Couple-Searching.git
 
 4. 학생부 선생님들께 제보한다. 
 
+
+
+# How it works?
+
+ 잔류 목록을 불러오고 남여가 같이 앉아있는 경우를 발견하면 그 주의 2주 전, 후 (총 5주)의 잔류 목록을 검사하여 5번 중 3번 이상 같이 앉는 것이 확인되면 커플로 판단합니다. 
