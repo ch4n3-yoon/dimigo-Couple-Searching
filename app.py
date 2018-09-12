@@ -7,19 +7,21 @@ import authkey
 
 __author__ = 'ch4n3'
 
-
 stayingDimigoins = {}
 couples = []
 
 headers = {
     'Authorization': authkey.authkey
 }
+
+
 def getStayLists():
     r = requests.get('http://api.dimigo.life/service/stay', headers=headers)
     dump = json.loads(r.text)
     if dump['code'] != 200:
         return False
     return dump['data']
+
 
 def getAllStayIds():
     stay_ids = []
@@ -28,10 +30,14 @@ def getAllStayIds():
         stay_ids.append(s['dates'][0]['stay_id'])
     return stay_ids
 
+
 allStayIds = getAllStayIds()
 
+
 def getStay(stay_id):
-    r = requests.get('http://api.dimigo.life/service/stay/apply/{0}'.format(stay_id), headers=headers)
+    r = requests.get(
+        'http://api.dimigo.life/service/stay/apply/{0}'.format(stay_id),
+        headers=headers)
 
     try:
         dump = json.loads(r.text)
@@ -42,37 +48,41 @@ def getStay(stay_id):
         return False
     return dump['data']
 
+
 def getStayingDimigoin(stay_id):
     stay_info = getStay(stay_id)
-    if stay_info == False:
+    if stay_info is False:
         return False
 
     stayDimigoins = []
     for i in range(len(stay_info)):
-        user = {'user_id': stay_info[i]['user_id'], 'name': stay_info[i]['name'],
-                'seat': stay_info[i]['seat'], 'gender': stay_info[i]['gender']}
+        user = {'user_id': stay_info[i]['user_id'],
+                'name': stay_info[i]['name'],
+                'seat': stay_info[i]['seat'],
+                'gender': stay_info[i]['gender']}
         stayDimigoins.append(user)
+
     return stayDimigoins
 
 
 def searchCouple(stay_id):
-    if stayingDimigoins.has_key(stay_id):
+    if stay_id in stayingDimigoins.keys():
         dimigoins = stayingDimigoins[stay_id]
     else:
         stayingDimigoins[stay_id] = getStayingDimigoin(stay_id)
         dimigoins = stayingDimigoins[stay_id]
 
-    if dimigoins == False:
+    if dimigoins is False:
         return False
 
     # print dimigoins
     for dimi1 in dimigoins:
         seat1 = dimi1['seat']
-        if seat1 == None:
+        if seat1 is None:
             continue
         for dimi2 in dimigoins:
             seat2 = dimi2['seat']
-            if seat2 == None:
+            if seat2 is None:
                 continue
             if dimi1['gender'] == dimi2['gender']:
                 continue
@@ -91,18 +101,22 @@ def searchCouple(stay_id):
                     #    lib.t.start()
                     # except RuntimeError:
                     #     pass
-                    if checkCouple(stay_id, dimi1['user_id'], dimi2['user_id']):
+                    if checkCouple(stay_id,
+                                   dimi1['user_id'],
+                                   dimi2['user_id']):
                         if not isAlreadySearched(dimi1, dimi2):
                             # print "[*] 커플 발견"
                             # print dimi1['name'],
                             # print "♥",
                             # print dimi2['name']
 
-                            couples.append({dimi1['gender']: dimi1['name'], dimi2['gender']: dimi2['name']})
+                            couples.append({dimi1['gender']: dimi1['name'],
+                                            dimi2['gender']: dimi2['name']})
                     # done = True
 
+
 def isCouple(stay_id, user_id1, user_id2):
-    if stayingDimigoins.has_key(stay_id):
+    if stay_id in stayingDimigoins.keys():
         dimigoins = stayingDimigoins[stay_id]
     else:
         stayingDimigoins[stay_id] = getStayingDimigoin(stay_id)
@@ -116,7 +130,7 @@ def isCouple(stay_id, user_id1, user_id2):
                 continue
 
             # 잔류 좌석 미선택자를 위한 예외 처리
-            if dimi1['seat'] == None or dimi2['seat'] == None:
+            if dimi1['seat'] is None or dimi2['seat'] is None:
                 continue
 
             try:
@@ -129,6 +143,7 @@ def isCouple(stay_id, user_id1, user_id2):
             except IndexError:
                 return False
     return False
+
 
 def checkCouple(searchedStayId, user_id1, user_id2):
     stay_ids = allStayIds
@@ -158,17 +173,21 @@ def checkCouple(searchedStayId, user_id1, user_id2):
             return True
     return False
 
+
 def isAlreadySearched(user1, user2):
     for c in couples:
-        if c[user1['gender']] == user1['name'] and c[user2['gender']] == user2['name']:
+        if c[user1['gender']] == user1['name'] \
+                and c[user2['gender']] == user2['name']:
             return True
     return False
+
 
 def printCouples():
     for c in couples:
         print c['M'],
         print '♥',
         print c['F']
+
 
 def main():
     stays = getStayLists()
@@ -181,7 +200,6 @@ def main():
         searchCouple(stay_id)
     printCouples()
 
+
 if __name__ == '__main__':
     main()
-
-
