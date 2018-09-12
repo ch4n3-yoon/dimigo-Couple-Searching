@@ -1,2 +1,2 @@
 
-authkey = 'XXXX'
+authkey = None
