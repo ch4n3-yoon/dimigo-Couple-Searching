@@ -1,11 +1,12 @@
 #!/usr/bin/env python2
 # coding: utf-8
 
-__author__ = 'ch4n3'
-
 import requests
 import json
 import authkey
+
+__author__ = 'ch4n3'
+
 
 stayingDimigoins = {}
 couples = []
