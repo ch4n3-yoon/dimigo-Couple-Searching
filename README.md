@@ -26,6 +26,10 @@ git clone https://github.com/ch4n3-yoon/dimigo-Couple-Searching.git
    curl -X POST "https://api.dimigo.life/users/login" -H "accept: application/json" -H "Content-Type: application/x-www-form-urlencoded" -d "id=YOUR_ID&pwd=YOUR_PWD"
    ```
 
+   or
+
+   [해당 커밋](https://github.com/ch4n3-yoon/dimigo-Couple-Searching/commit/7cbca29d6bf2991a18dd21e5207882c19012e726) 이후 토큰 자동화를 통하여 **3번부터 실행**해도 무관합니다.
+
 2. 받은 토큰 값을 ```authkey.py``` 의 ```authkey``` 변수에 넣는다. 
 
 3. 파이썬으로 실행시킨다.
