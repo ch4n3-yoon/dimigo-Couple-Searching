@@ -3,7 +3,6 @@
 
 import requests
 import json
-import authkey
 import setToken
 
 __author__ = 'ch4n3'
@@ -11,9 +10,9 @@ __author__ = 'ch4n3'
 stayingDimigoins = {}
 couples = []
 
-setToken.set_token()
+authkey = setToken.set_token()
 headers = {
-    'Authorization': authkey.authkey
+    'Authorization': authkey
 }
 
 

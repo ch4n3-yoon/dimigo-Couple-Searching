@@ -3,10 +3,9 @@
 
 import requests
 import json
-import authkey
 
-id_ = 'id'
-pwd = 'password'
+id_ = 'chaneyoon'
+pwd = 'rudska306'
 
 headers = {
     'Accept': 'application/json',
@@ -15,13 +14,13 @@ headers = {
 
 
 def set_token():
-    if authkey.authkey is None:
-        data = {
-            'id': id_,
-            'pwd': pwd,
-        }
+    data = {
+        'id': id_,
+        'pwd': pwd,
+    }
 
-        r = requests.post("http://api.dimigo.life/users/login",
+    r = requests.post("http://api.dimigo.life/users/login",
                           data=data, headers=headers)
-        loginData = json.loads(r.text)
-        authkey.authkey = loginData['token']
+    loginData = json.loads(r.text)
+    return loginData['token']
+

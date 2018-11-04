@@ -1,2 +1,0 @@
-
-authkey = None
