@@ -12,7 +12,6 @@ headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
 }
 
-
 def set_token():
     data = {
         'id': id_,
