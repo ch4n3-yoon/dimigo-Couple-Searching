@@ -4,8 +4,8 @@
 import requests
 import json
 
-id_ = 'chaneyoon'
-pwd = 'rudska306'
+id_ = '*********'
+pwd = '*********'
 
 headers = {
     'Accept': 'application/json',
