@@ -15,52 +15,56 @@ headers = {
     'Authorization': authkey
 }
 
-def chk200 (data):
-    if data != 200:
-        return True
-    else:
-        return False 
 
-def getAllStayIds():
+def getStayLists():
     r = requests.get('http://api.dimigo.life/service/stay', headers=headers)
     dump = json.loads(r.text)
-    if chk200(dump['code']):
-      return [ s['dates'][0]['stay_id'] for s in dump['data'] ]
-    else:
-      return False
+    if dump['code'] != 200:
+        return False
+    return dump['data']
+
+
+def getAllStayIds():
+    stay_ids = []
+    stays = getStayLists()
+    for s in stays:
+        stay_ids.append(s['dates'][0]['stay_id'])
+    return stay_ids
+
 
 allStayIds = getAllStayIds()
+
 
 def getStay(stay_id):
     r = requests.get(
         'http://api.dimigo.life/service/stay/apply/{0}'.format(stay_id),
         headers=headers)
+
     try:
         dump = json.loads(r.text)
     except ValueError:
         print "[*] json parsing failed"
         return False
-        
-    if chk200(dump['code']):
-        return dump['data']
-    else:
+    if dump['code'] != 200:
         return False
+    return dump['data']
 
-def userInfo (user):
-    return {
-        'user_id': user['user_id'],
-        'name': user['name'],
-        'seat': user['seat'],
-        'gender': user['gender']
-    }
 
 def getStayingDimigoin(stay_id):
     stay_info = getStay(stay_id)
     if stay_info is False:
         return False
 
-    stayDimigoins = [ userInfo(x) for x in stay_info ]
+    stayDimigoins = []
+    for i in range(len(stay_info)):
+        user = {'user_id': stay_info[i]['user_id'],
+                'name': stay_info[i]['name'],
+                'seat': stay_info[i]['seat'],
+                'gender': stay_info[i]['gender']}
+        stayDimigoins.append(user)
+
     return stayDimigoins
+
 
 def searchCouple(stay_id):
     if stay_id in stayingDimigoins.keys():
