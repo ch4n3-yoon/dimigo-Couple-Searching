@@ -16,7 +16,7 @@ headers = {
 }
 
 def chk200(code):
-    if code != 200:
+    if code == 200:
         return True
     else:
         return False
@@ -25,14 +25,16 @@ def chk200(code):
 def getStayLists():
     r = requests.get('http://api.dimigo.life/service/stay', headers=headers)
     dump = json.loads(r.text)
-    if dump['code'] != 200:
-        return False
-    return dump['data']
+
+    if chk200(dump['code']):
+        return dump['data']
+    return False
 
 
 def getAllStayIds():
     stay_ids = []
     stays = getStayLists()
+
     for s in stays:
         stay_ids.append(s['dates'][0]['stay_id'])
     return stay_ids
