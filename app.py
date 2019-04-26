@@ -15,6 +15,12 @@ headers = {
     'Authorization': authkey
 }
 
+def chk200(code):
+    if code != 200:
+        return True
+    else:
+        return False
+
 
 def getStayLists():
     r = requests.get('http://api.dimigo.life/service/stay', headers=headers)
